@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrieve: Bahrain Open Data Portal API</title>
+    <!-- Use Pico CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" >
+    
+    <style>
+        h1 {
+            color: maroon;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid white;
+        }
+        @media (max-width: 600px) {
+            table {
+                width: 100%;
+            } 
+            th, td {
+                font-size: x-small;
+            }
+            h1 {
+                font-size: medium;
+            }
+        }
+        th, td {
+            border: 2px solid white; 
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Comprehensive data of University of Bahrain students enrolled</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Semester</th>
+                <th>The Programs</th>
+                <th>Nationality</th>
+                <th>Colleges</th>
+                <th>Number of Students</th>
+            </tr>
+        </thead>
+        <tbody id="data-table">
+        </tbody>
+    </table>
+
+    <script>
+        const url = "https://data.gov.bh/api/explore/v2.1/catalog/datasets/01-statistics-of-students-nationalities_updated/records?where=colleges%20like%20%22IT%22%20AND%20the_programs%20like%20%22bachelor%22&limit=100";
+
+        async function fetchData() {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const tableBody = document.getElementById("data-table");
+
+                data.results.forEach(record => {
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+                        <td>${record.year}</td>
+                        <td>${record.semester}</td>
+                        <td>${record.lbrmj}</td>
+                        <td>${record.nationality}</td>
+                        <td>${record.colleges}</td>
+                        <td>${record.number_of_students}</td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                const tableBody = document.getElementById("data-table");
+                const errorRow = document.createElement("tr");
+                errorRow.innerHTML = `<td colspan="6">Error retrieving data.</td>`;
+                tableBody.appendChild(errorRow);
+            }
+        }
+
+        // Fetch data when the page loads
+        fetchData();
+    </script>
+</body>
+</html>
